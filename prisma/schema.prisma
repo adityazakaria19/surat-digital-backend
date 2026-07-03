@@ -1,0 +1,91 @@
+generator erd {
+  provider = "prisma-erd-generator"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL")
+}
+
+enum Role {
+  admin
+  staff
+  pimpinan
+}
+
+enum JenisSurat {
+  masuk
+  keluar
+}
+
+enum StatusSurat {
+  draft
+  disposition
+  process
+  completed
+}
+
+enum StatusDisposisi {
+  pending
+  completed
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  nama      String
+  email     String   @unique
+  password  String
+  role      Role
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  suratDibuat   Surat[]     @relation("UserSurat")
+  disposisiDari Disposisi[] @relation("DariUser")
+  disposisiKe   Disposisi[] @relation("KeUser")
+
+  @@map("users")
+}
+
+model Surat {
+  id             Int         @id @default(autoincrement())
+  nomorSurat     String      @map("nomor_surat")
+  jenis          JenisSurat
+  tanggalSurat   DateTime    @map("tanggal_surat")
+  pengirimTujuan String      @map("pengirim_tujuan")
+  perihal        String
+  fileUrl        String?     @map("file_url")
+  status         StatusSurat @default(draft)
+  userId         Int         @map("user_id")
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+
+  user      User        @relation("UserSurat", fields: [userId], references: [id])
+  disposisi Disposisi[]
+
+  @@map("surat")
+}
+
+model Disposisi {
+  id           Int             @id @default(autoincrement())
+  suratId      Int             @map("surat_id")
+  dariUserId   Int             @map("dari_user_id")
+  kepadaUserId Int             @map("kepada_user_id")
+  instruksi    String
+  batasWaktu   DateTime        @map("batas_waktu")
+  status       StatusDisposisi @default(pending)
+  createdAt    DateTime        @default(now()) @map("created_at")
+
+  surat      Surat @relation(fields: [suratId], references: [id])
+  dariUser   User  @relation("DariUser", fields: [dariUserId], references: [id])
+  kepadaUser User  @relation("KeUser", fields: [kepadaUserId], references: [id])
+
+  @@map("disposisi")
+}

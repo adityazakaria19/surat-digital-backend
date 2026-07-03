@@ -1,0 +1,25 @@
+{
+  "name": "surat-menyurat-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js",
+    "build": "npx prisma generate",
+    "prisma:migrate": "npx prisma migrate deploy",
+    "seed": "node seed.js"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.0.4",
+    "@prisma/client": "^5.22.0",
+    "bcryptjs": "^2.4.3",
+    "cloudinary": "^2.10.0",
+    "dotenv": "^16.4.5",
+    "hono": "^4.6.0",
+    "jsonwebtoken": "^9.0.2",
+    "multiparty": "^4.3.0"
+  },
+  "devDependencies": {
+    "prisma": "^5.22.0"
+  }
+}
