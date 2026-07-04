@@ -38,6 +38,24 @@ app.use(
   }),
 );
 
+// Explicitly respond to preflight requests and ensure CORS headers
+app.options("/*", (c) =>
+  c.text("", 204, {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  }),
+);
+
+// Ensure CORS headers are present on all responses (safety-net for proxies)
+app.use("/*", async (c, next) => {
+  await next();
+  c.header("Access-Control-Allow-Origin", "*");
+  c.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  c.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  return c;
+});
+
 // Health check
 app.get("/", (c) => c.json({ status: "ok", message: "Surat Digital API" }));
 
